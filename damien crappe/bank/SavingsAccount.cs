@@ -1,21 +1,20 @@
 class SavingsAccount : Account
 {
-    public SavingsAccount(string number, double balance, Person owner) : base(number, balance, owner)
+    public SavingsAccount(string number, Person owner)
+        : base(number, owner)
     {
     }
-    public override void Withdraw(double amount)
+
+    public SavingsAccount(string number, Person owner, double balance)
+        : base(number, owner, balance)
     {
-        if (GetBalance() - amount < 0)
-        {
-            Console.WriteLine("Retrait impossible, le solde serait négatif.");
-        }
-        else
-        {
-            SetBalance(GetBalance() - amount);
-        }
     }
+
+    // Pour un compte épargne : jamais de négatif
+    protected override bool CanWithdraw(double amount) => Balance - amount >= 0;
+
     protected override double CalculInterest()
     {
-        return GetBalance() * 1.045;
+        return Balance * 0.045;
     }
 }

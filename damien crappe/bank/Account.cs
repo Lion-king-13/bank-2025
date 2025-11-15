@@ -1,47 +1,52 @@
-abstract class Account
+abstract class Account : IBankAccount
 {
-    public string Number { get; set; }
+    public string Number { get; private set; }
     public double Balance { get; private set; }
-    public Person Owner { get; set; }
-    public Account(string number, double balance, Person owner)
+    public Person Owner { get; private set; }
+
+    protected Account(string number, Person owner)
     {
         Number = number;
-        Balance = balance;
         Owner = owner;
+        Balance = 0;
     }
+
+    protected Account(string number, Person owner, double balance)
+    {
+        Number = number;
+        Owner = owner;
+        Balance = balance;
+    }
+
     public virtual void Deposit(double amount)
     {
+        if (amount <= 0)
+            throw new ArgumentOutOfRangeException(nameof(amount),
+                "Le montant du dépôt doit être supérieur à 0.");
+
         Balance += amount;
-        return;
     }
+
     public virtual void Withdraw(double amount)
     {
-        if (Balance <= 0)
-        {
-            Console.WriteLine("Le solde est insuffisant pour effectuer ce retrait.");
-            return;
-        }
-        else if (Balance - amount < 0)
-        {
-            Console.WriteLine("Retrait impossible, le compte serait à découvert.");
-            return;
-        }
-        else
-        {
-            Balance -= amount;
-            return;
-        }
+        if (amount <= 0)
+            throw new ArgumentOutOfRangeException(nameof(amount),
+                "Le montant du retrait doit être supérieur à 0.");
+
+        if (!CanWithdraw(amount))
+            throw new InsufficientBalanceException("Le montant ne peut pas être retiré.");
+
+        Balance -= amount;
     }
-    public double GetBalance() => Balance;
-    protected void SetBalance(double newBalance)
-    {
-        Balance = newBalance;
-    }
+
+    // Règle de retrait par défaut : jamais en négatif
+    protected virtual bool CanWithdraw(double amount) => Balance - amount >= 0;
+
     protected abstract double CalculInterest();
 
     public void ApplyInterest()
     {
-        double interests = CalculInterest();
-        SetBalance(GetBalance()+interests);
+        double interest = CalculInterest();
+        Balance += interest;
     }
 }

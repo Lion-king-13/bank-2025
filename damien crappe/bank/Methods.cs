@@ -11,7 +11,7 @@ class Methods
         {
             if (account.Owner.FirstName == owner.FirstName && account.Owner.LastName == owner.LastName)
             {
-                SumAccount += account.GetBalance();
+                SumAccount += account.Balance;
             }
         }
         Console.WriteLine($"La somme des comptes de {owner.FirstName} {owner.LastName} est de {SumAccount} euros.");
